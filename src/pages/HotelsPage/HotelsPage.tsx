@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, startTransition } from 'react';
 import styles from './HotelsPage.module.css';
 import HotelCard from '../../components/HotelCard/HotelCard';
 import Pagination from '../../components/Pagination/Pagination';
 import { getHotels } from '../../api/hotels';
+import { AIRecommendations } from '../../components/AIRecommendations/AIRecommendations';
 
 // Типы данных
 interface Hotel {
@@ -68,8 +69,9 @@ const HotelsPage = () => {
       
       setHotels(data.hotels);
       setTotalPages(Math.ceil(data.total / PAGE_SIZE));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Ошибка загрузки отелей';
+      setError(message);
       setHotels([]);
       setTotalPages(0);
     } finally {
@@ -78,8 +80,10 @@ const HotelsPage = () => {
   }, []);
 
   useEffect(() => {
+  startTransition(() => {
     fetchHotels(1, initialFilters);
-  }, [fetchHotels]);
+  });
+}, [fetchHotels]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -218,6 +222,7 @@ const HotelsPage = () => {
       {!loading && !error && hotels.length === 0 && (
         <p>По вашему запросу отелей не найдено.</p>
       )}
+      <AIRecommendations />
     </div>
   );
 };

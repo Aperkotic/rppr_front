@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import {
   createContext,
   useCallback,
@@ -42,22 +44,26 @@ function saveUser(user: AuthUser | null): void {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // ✅ ИСПРАВЛЕНИЕ 2: Lazy initialization вместо useEffect
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    const token = getAccessToken()
+    const storedUser = loadUserFromStorage()
+    if (token && storedUser) {
+      return storedUser
+    }
+    return null
+  })
+  
+  // ✅ isLoading сразу false, т.к. инициализация синхронная
+  const [isLoading] = useState(false)
 
   const logout = useCallback(() => {
     clearAuthStorage()
     setUser(null)
   }, [])
 
+  // ✅ Оставляем только подписку на событие logout
   useEffect(() => {
-    const token = getAccessToken()
-    const storedUser = loadUserFromStorage()
-    if (token && storedUser) {
-      setUser(storedUser)
-    }
-    setIsLoading(false)
-
     const onLogout = () => {
       setUser(null)
     }
@@ -67,7 +73,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (loginName: string, password: string) => {
-      // API возвращает все необходимые данные
       const { access_token, first_name, last_name } = await authApi.login(loginName, password);
       setAccessToken(access_token);
 
@@ -80,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login: loginName,
         first_name: first_name,
         last_name: last_name,
-        is_manager: false, // Предполагаем, что API вернет это поле, если оно нужно
+        is_manager: false,
       };
       
       saveUser(authUser);
@@ -90,9 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const register = useCallback(async (data: UserCreate) => {
-    // После регистрации API возвращает созданного пользователя
     const newUser = await authApi.register(data);
-    // Сразу логинимся, чтобы получить токен и полное имя
     if (data.password) {
       await login(newUser.login, data.password);
     }

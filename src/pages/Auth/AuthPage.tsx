@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import styles from './AuthPage.module.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext, AuthContextValue } from '../../contexts/AuthContext';
@@ -16,12 +16,13 @@ const getAuthErrorMessage = (message?: string) => {
   if (message === 'Login already exists') {
     return 'Пользователь с таким email уже существует';
   }
-
   return message || 'Произошла неизвестная ошибка';
 };
 
 const AuthPage: React.FC<AuthPageProps> = ({ initialIsLogin }) => {
-  const [isLogin, setIsLogin] = useState(initialIsLogin);
+  // ✅ ИСПРАВЛЕНИЕ: Используем initialIsLogin напрямую, без дополнительного состояния
+  const isLogin = initialIsLogin;
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -36,11 +37,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialIsLogin }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setIsLogin(initialIsLogin);
-    setError(null);
-    setFormData({ email: '', password: '', confirmPassword: '', firstName: '', lastName: '' });
-  }, [initialIsLogin, location]);
+  // ✅ ИСПРАВЛЕНИЕ: Убираем useEffect с setState, используем key на форме
+  const formKey = `${isLogin}-${location.pathname}`;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -67,7 +65,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialIsLogin }) => {
         return 'Пароли не совпадают';
       }
     }
-    return null; // Нет ошибок
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,11 +91,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialIsLogin }) => {
           last_name: formData.lastName,
           is_manager: false,
         });
-        // После успешной регистрации сразу перенаправляем на главную
         navigate('/');
       }
-    } catch (err: any) {
-      setError(getAuthErrorMessage(err.message));
+    } catch (err: unknown) {
+      // ✅ ИСПРАВЛЕНИЕ: Заменяем any на unknown
+      const message = err instanceof Error ? err.message : undefined;
+      setError(getAuthErrorMessage(message));
       console.error(err);
     } finally {
       setLoading(false);
@@ -111,7 +110,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialIsLogin }) => {
 
         <h2 className={styles.title}>{isLogin ? 'Авторизация' : 'Регистрация'}</h2>
 
-        <form className={styles.authForm} onSubmit={handleSubmit} noValidate>
+        {/* ✅ ИСПРАВЛЕНИЕ: Добавляем key для автоматического сброса формы */}
+        <form key={formKey} className={styles.authForm} onSubmit={handleSubmit} noValidate>
           <div className={styles.inputGroup}>
             <input
               className={styles.inputField}

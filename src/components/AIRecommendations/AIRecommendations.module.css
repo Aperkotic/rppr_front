@@ -1,0 +1,60 @@
+.wrapper {
+  padding: 30px 20px;
+  background: #F7FBFE;
+  margin-top: 40px;
+  border-top: 1px solid #9ACEEB;
+}
+
+.title {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  color: #2F353B;
+  margin: 0 0 20px 0;
+  font-weight: 400;
+  padding-left: 20px;
+}
+
+.carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 20px;
+  scroll-behavior: smooth;
+}
+
+.carousel::-webkit-scrollbar {
+  height: 6px;
+}
+
+.carousel::-webkit-scrollbar-track {
+  background: #F7FBFE;
+  border-radius: 3px;
+}
+
+.carousel::-webkit-scrollbar-thumb {
+  background: #9ACEEB;
+  border-radius: 3px;
+}
+
+.carousel::-webkit-scrollbar-thumb:hover {
+  background: #6FAFD6;
+}
+
+.cardWrapper {
+  flex: 0 0 250px;
+  min-width: 250px;
+}
+
+.error {
+  text-align: center;
+  color: #C62828;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  color: #6F7A83;
+  padding: 20px;
+  font-size: 14px;
+}

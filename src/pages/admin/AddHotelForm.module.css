@@ -1,0 +1,94 @@
+.page {
+  padding: 40px 60px;
+  background: #F7FBFE;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 24px;
+  color: #2F353B;
+  margin: 0 0 30px 0;
+  font-weight: 400;
+}
+
+.form {
+  max-width: 600px;
+  padding: 30px;
+  background: #FFFFFF;
+  border: 1px solid #9ACEEB;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group label {
+  font-size: 14px;
+  color: #2F353B;
+}
+
+.group input,
+.group textarea {
+  padding: 10px 12px;
+  border: 1px solid #9ACEEB;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #2F353B;
+  background: #FFFFFF;
+  outline: none;
+}
+
+.group input:focus,
+.group textarea:focus {
+  border-color: #6FAFD6;
+}
+
+.error {
+  padding: 10px;
+  background: #FFEBEE;
+  color: #C62828;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: 10px;
+  background: #9ACEEB;
+  color: #2F353B;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #6FAFD6;
+}
+
+.btnSecondary {
+  flex: 1;
+  padding: 10px;
+  background: #FFFFFF;
+  color: #2F353B;
+  border: 1px solid #9ACEEB;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btnSecondary:hover {
+  background: #F7FBFE;
+}

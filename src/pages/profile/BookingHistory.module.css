@@ -1,168 +1,307 @@
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.title {
-  font-size: 28px;
-  margin-bottom: 30px;
+/* General Page Layout */
+.page {
+  background: #F7FBFE;
+  min-height: 100vh;
+  padding: 2rem 8rem;
+  font-family: 'Inter', sans-serif;
   color: #2F353B;
 }
 
-.loading,
-.error,
-.empty {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
+.sectionTitle {
+  font-size: 36px;
+  font-weight: 400;
+  margin-bottom: 2rem;
 }
 
-.error {
-  color: #dc3545;
+/* Personal Info Section */
+.personalInfo {
+  margin-bottom: 4rem;
 }
 
-.empty {
-  color: #6F7A83;
-}
-
-.bookings {
+.infoFields {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
+  max-width: 400px;
 }
 
-.booking {
-  background: white;
-  border: 2px solid #9ACEEB;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.field {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #9ACEEB;
+  padding-bottom: 0.5rem;
+}
+
+.field label {
+  font-size: 12px;
+  color: #6F7A83;
+  margin-bottom: 0.5rem;
+}
+
+.field p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Bookings Section */
+.bookingsSection {
+  margin-top: 2rem;
+}
+
+.noBookings {
+  font-size: 24px;
+  text-align: center;
+  margin-top: 4rem;
+  color: #2F353B;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden; /* To contain the image within the border-radius */
+}
+
+.cardImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.cardContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #9ACEEB;
+  margin-bottom: 1rem;
 }
 
-.hotelName {
-  font-size: 20px;
+.header h3 {
+  font-size: 1.2rem;
   margin: 0;
-  color: #4D89AE;
 }
 
 .status {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
+  color: #fff;
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
 }
 
-.statusConfirmed {
-  background: #d4edda;
-  color: #155724;
+.info {
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
 }
 
-.statusCancelled {
-  background: #f8d7da;
-  color: #721c24;
+.info p {
+  margin: 0.5rem 0;
 }
 
-.statusCompleted {
-  background: #d1ecf1;
-  color: #0c5460;
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+  flex-wrap: wrap;
 }
 
-.details {
-  margin-bottom: 15px;
+.payButton,
+.editButton,
+.cancelButton {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  color: white;
 }
 
-.details p {
-  margin: 8px 0;
-  font-size: 14px;
-  color: #2F353B;
+.payButton {
+  background-color: #4CAF50; /* Green */
+}
+.payButton:hover {
+  background-color: #45a049;
 }
 
-.details strong {
-  color: #4D89AE;
+.editButton {
+  background-color: #2196F3; /* Blue */
+}
+.editButton:hover {
+  background-color: #1e88e5;
 }
 
 .cancelButton {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s;
+  background-color: #F44336; /* Red */
 }
-
 .cancelButton:hover {
-  background: #c82333;
+  background-color: #d32f2f;
 }
 
-/* Модальное окно */
-.modal {
+/* --- Modals --- */
+.modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
 
-.modalContent {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 400px;
-  width: 90%;
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
   text-align: center;
+  max-width: 450px;
+  width: 90%;
+  position: relative;
 }
 
-.modalContent h3 {
-  margin: 0 0 15px 0;
+.modal h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
   color: #2F353B;
-}
-
-.modalContent p {
-  margin: 0 0 25px 0;
-  color: #6F7A83;
 }
 
 .modalActions {
   display: flex;
-  gap: 10px;
   justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.confirmButton {
-  background: #dc3545;
-  color: white;
+.confirmBtn,
+.cancelBtn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 5px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+}
+
+.confirmBtn {
+  background-color: #4D89AE;
+  color: white;
+}
+.cancelBtn {
+  background-color: #ccc;
+}
+
+.closeModalButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6F7A83;
+}
+
+/* Payment Modal */
+.paymentModal {
+  width: 100%;
+  max-width: 500px;
+}
+
+.paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.paymentField {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #9ACEEB;
+  padding-bottom: 0.5rem;
+}
+
+.paymentField label {
+  font-size: 12px;
+  color: #6F7A83;
+  margin-bottom: 0.5rem;
+}
+
+.paymentField input {
+  border: none;
+  font-size: 16px;
+  outline: none;
+  background: transparent;
+}
+
+.paymentRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.paymentRow .paymentField {
+  flex: 1;
+}
+
+.paymentSubmitButton {
+  width: 100%;
+  padding: 1rem;
+  background: #9ACEEB;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #2F353B;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+/* Edit Modal */
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.editField {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.editField label {
+  margin-bottom: 0.5rem;
   font-size: 14px;
+  color: #6F7A83;
 }
 
-.confirmButton:hover {
-  background: #c82333;
+.editField input {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
-.modalActions .cancelButton {
-  background: #6c757d;
-}
-
-.modalActions .cancelButton:hover {
-  background: #5a6268;
+.editError {
+  color: #F44336;
+  margin-top: 1rem;
+  font-size: 14px;
 }

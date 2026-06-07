@@ -31,7 +31,11 @@ export default defineConfig({
       '/auth': { target: 'http://localhost:8000', changeOrigin: true },
       '/hotels': { target: 'http://localhost:8000', changeOrigin: true },
       '/bookings': { target: 'http://localhost:8000', changeOrigin: true },
-      '/admin': { target: 'http://localhost:8000', changeOrigin: true },
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
       '/room': { target: 'http://localhost:8000', changeOrigin: true },
       '/ai': { target: 'http://localhost:8000', changeOrigin: true }
     }

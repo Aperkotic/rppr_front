@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { isFullUser } from '../types/auth'
@@ -20,6 +20,7 @@ export function MainLayout() {
         setUserMenuOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
@@ -59,18 +60,11 @@ export function MainLayout() {
                   {user?.is_manager && (
                     <>
                       <Link
-                        to="/admin/bookings"
+                        to="/admin"
                         className={styles.dropdownItem}
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        Панель управляющего
-                      </Link>
-                      <Link
-                        to="/admin/add-hotel"
-                        className={styles.dropdownItem}
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Добавить отель
+                        Панель администратора
                       </Link>
                     </>
                   )}

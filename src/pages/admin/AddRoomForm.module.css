@@ -1,25 +1,46 @@
 .page {
-  padding: 40px 60px;
-  background: #F7FBFE;
   min-height: 100vh;
+  padding: 72px 9.5%;
+  background: #F7FBFE;
+  color: #2F353B;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.headerRow {
+  margin-bottom: 28px;
+}
+
+.backLink {
+  display: inline-flex;
+  margin-bottom: 16px;
+  color: #4D89AE;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
 }
 
 .title {
-  font-size: 24px;
+  margin: 0;
   color: #2F353B;
-  margin: 0 0 30px 0;
+  font-size: 36px;
   font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
 .form {
-  max-width: 600px;
+  width: min(680px, 100%);
   padding: 30px;
   background: #FFFFFF;
-  border: 1px solid #9ACEEB;
-  border-radius: 4px;
+  border: 2px solid #9ACEEB;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  box-sizing: border-box;
 }
 
 .group {
@@ -29,66 +50,94 @@
 }
 
 .group label {
-  font-size: 14px;
   color: #2F353B;
+  font-size: 15px;
 }
 
 .group input,
 .group textarea {
-  padding: 10px 12px;
+  width: 100%;
+  padding: 11px 12px;
   border: 1px solid #9ACEEB;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 5px;
+  background: #F7FBFE;
   color: #2F353B;
-  background: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
   outline: none;
+  box-sizing: border-box;
+}
+
+.group textarea {
+  resize: vertical;
 }
 
 .group input:focus,
 .group textarea:focus {
-  border-color: #6FAFD6;
+  border-color: #4D89AE;
+  background: #FFFFFF;
 }
 
 .error {
-  padding: 10px;
+  padding: 12px 14px;
   background: #FFEBEE;
-  color: #C62828;
+  border: 1px solid #EF9A9A;
   border-radius: 4px;
+  color: #C62828;
   font-size: 14px;
 }
 
 .actions {
   display: flex;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 8px;
+}
+
+.btnPrimary,
+.btnSecondary {
+  min-height: 42px;
+  flex: 1;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #2F353B;
+  cursor: pointer;
 }
 
 .btnPrimary {
-  flex: 1;
-  padding: 10px;
   background: #9ACEEB;
-  color: #2F353B;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+  border: 1px solid #9ACEEB;
 }
 
-.btnPrimary:hover:not(:disabled) {
-  background: #6FAFD6;
+.btnPrimary:hover:not(:disabled),
+.btnSecondary:hover {
+  background: #E8F4FA;
+}
+
+.btnPrimary:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .btnSecondary {
-  flex: 1;
-  padding: 10px;
   background: #FFFFFF;
-  color: #2F353B;
   border: 1px solid #9ACEEB;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
 }
 
-.btnSecondary:hover {
-  background: #F7FBFE;
+@media (max-width: 720px) {
+  .page {
+    padding: 42px 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .form {
+    padding: 20px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
 }

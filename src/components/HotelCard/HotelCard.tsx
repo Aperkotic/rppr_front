@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import styles from './HotelCard.module.css'
-import { apiClient } from '../../api/client'
+import { useNavigate } from 'react-router-dom'
 
 interface Room {
   id?: number
@@ -22,62 +22,10 @@ interface HotelCardProps {
 }
 
 const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
-  const [rooms, setRooms] = useState<Room[]>([])
-  const [recommendation, setRecommendation] = useState<string | null>(null)
+  const navigate = useNavigate()
 
-  // ✅ Загружаем комнаты отеля
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchRooms = async () => {
-      try {
-        const response = await apiClient.get(`/hotels/${hotel.id}/rooms`)
-        if (isMounted) {
-          setRooms(response.data || [])
-        }
-      } catch (err) {
-        console.error('Ошибка загрузки комнат:', err)
-      }
-    }
-
-    fetchRooms()
-
-    return () => {
-      isMounted = false
-    }
-  }, [hotel.id])
-
-  // ✅ Загружаем рекомендацию ИИ
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchRecommendation = async () => {
-      try {
-        const response = await apiClient.get(`/ai/recommendations`, {
-          params: { hotel_id: hotel.id }
-        })
-        const data = response.data
-        if (isMounted) {
-          setRecommendation(
-            data?.text ||
-            data?.recommendation ||
-            (typeof data === 'string' ? data : null)
-          )
-        }
-      } catch {
-        // Игнорируем ошибки
-      }
-    }
-
-    fetchRecommendation()
-
-    return () => {
-      isMounted = false
-    }
-  }, [hotel.id])
-
-  // ✅ Используем загруженные комнаты или те, что пришли из API
-  const allRooms = rooms.length > 0 ? rooms : (hotel.rooms || [])
+  // ✅ Используем комнаты, что пришли из API
+  const allRooms = hotel.rooms || []
 
   const minPrice = allRooms.length > 0
     ? Math.min(...allRooms.map(room => parseFloat(room.price_per_night)))
@@ -85,10 +33,14 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   const firstRoomName = allRooms[0]?.name || ''
 
-  const placeholderImageUrl = `https://via.placeholder.com/400x300.png?text=${encodeURIComponent(hotel.name)}`
+  const placeholderImageUrl = `https://source.unsplash.com/400x300/?hotel,room&random=${hotel.id}`
+
+  const handleSelectHotel = () => {
+    navigate(`/hotel/${hotel.id}`)
+  }
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleSelectHotel}>
       <img
         src={hotel.image_url}
         alt={hotel.name}
@@ -115,13 +67,6 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         )}
 
         <p className={styles.description}>{hotel.location}</p>
-
-        {recommendation && (
-          <div className={styles.recommendation}>
-            <strong>💡 Рекомендация:</strong>
-            <p>{recommendation}</p>
-          </div>
-        )}
 
         <button className={styles.footer}>
           Выбрать

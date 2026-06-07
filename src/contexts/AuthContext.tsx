@@ -12,7 +12,7 @@ import * as authApi from '../api/auth'
 import { clearAuthStorage, setAccessToken, getAccessToken } from '../api/client'
 import { STORAGE_AUTH_USER } from '../api/storage'
 import type { AuthUser, User, UserCreate } from '../types/auth'
-import { getUserIdFromToken } from '../utils/jwt'
+import { getIsManagerFromToken, getJwtPayload, getUserIdFromToken } from '../utils/jwt'
 import { mockLogin, mockRegister } from '../api/mockAuth'
 
 export interface AuthContextValue {
@@ -44,12 +44,26 @@ function saveUser(user: AuthUser | null): void {
   }
 }
 
+function createAuthUserFromToken(token: string, fallbackLogin: string): AuthUser {
+  const payload = getJwtPayload(token)
+
+  return {
+    login: typeof payload?.login === 'string' ? payload.login : fallbackLogin,
+    first_name: typeof payload?.first_name === 'string' ? payload.first_name : '',
+    last_name: typeof payload?.last_name === 'string' ? payload.last_name : '',
+    is_manager: getIsManagerFromToken(token),
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => {
     const token = getAccessToken()
     const storedUser = loadUserFromStorage()
     if (token && storedUser) {
-      return storedUser
+      return {
+        ...storedUser,
+        is_manager: getIsManagerFromToken(token),
+      }
     }
     return null
   })
@@ -80,11 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new Error('Не удалось прочитать id пользователя из токена')
         }
 
+        const tokenUser = createAuthUserFromToken(response.access_token, loginName)
         const authUser: AuthUser = {
-          login: loginName,
-          first_name: response.first_name ?? '',
-          last_name: response.last_name ?? '',
-          is_manager: Boolean(response.is_manager),
+          ...tokenUser,
+          first_name: response.first_name ?? tokenUser.first_name,
+          last_name: response.last_name ?? tokenUser.last_name,
         }
 
         saveUser(authUser)
@@ -95,11 +109,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const mockResult = await mockLogin(loginName, password)
         setAccessToken(mockResult.access_token)
 
+        const tokenUser = createAuthUserFromToken(mockResult.access_token, loginName)
         const authUser: AuthUser = {
-          login: loginName,
-          first_name: mockResult.first_name ?? '',
-          last_name: mockResult.last_name ?? '',
-          is_manager: mockResult.is_manager || false,
+          ...tokenUser,
+          first_name: mockResult.first_name ?? tokenUser.first_name,
+          last_name: mockResult.last_name ?? tokenUser.last_name,
         }
 
         saveUser(authUser)

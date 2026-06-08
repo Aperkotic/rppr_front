@@ -42,4 +42,14 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   }),
+
+  {
+    files: ['**/*.{test,spec}.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.vitest,
+      },
+    },
+  },
 ])

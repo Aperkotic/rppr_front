@@ -4,38 +4,19 @@ import { apiClient } from '../../api/client'
 import styles from './HotelDetailPage.module.css'
 import { useAuth } from '../../hooks/useAuth'
 import { AxiosError } from 'axios'
-
-interface Room {
-  id: number
-  name: string
-  description: string
-  price_per_night: string
-  capacity: number
-  image_url: string
-  hotel_name: string
-  hotel_description: string
-  hotel_image_url: string
-}
-
-interface RecommendedRoom {
-  hotel_id: number
-  id: number
-  name: string
-  price_per_night: number
-  image_url: string
-}
+import { notificationService } from '../../services/notification/notificationService'
+import { getErrorMessage } from '../../utils/getErrorMessage'
+import { notifyApiError } from '../../utils/notifyApiError'
+import { ImageWithFallback } from './ImageWithFallback'
+import { RoomList } from './RoomList'
+import { RecommendedRooms } from './RecommendedRooms'
+import { PaymentModal } from './PaymentModal'
+import { isPaymentFormComplete } from './paymentMasks'
+import type { Room, RecommendedRoom } from './types'
 
 interface CreatedBooking {
   id?: number
   booking_id?: number
-}
-
-const placeholderImage = 'https://source.unsplash.com/400x300/?hotel'
-
-const ImageWithFallback = ({ src, alt, className }: { src: string; alt: string; className: string }) => {
-  const [imgSrc, setImgSrc] = useState(src)
-  const handleError = () => setImgSrc(placeholderImage)
-  return <img src={imgSrc} alt={alt} className={className} onError={handleError} />
 }
 
 export const HotelDetailPage = () => {
@@ -73,6 +54,7 @@ export const HotelDetailPage = () => {
         }
       } catch (error) {
         console.error('Error fetching hotel data:', error)
+        notifyApiError(error, 'Не удалось загрузить данные отеля')
       } finally {
         setLoading(false)
       }
@@ -86,14 +68,14 @@ export const HotelDetailPage = () => {
     setBookingError(null)
   }
 
-  const handlePaymentFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentData({ ...paymentData, [event.target.name]: event.target.value })
+  const handlePaymentFieldChange = (field: keyof typeof paymentData, value: string) => {
+    setPaymentData({ ...paymentData, [field]: value })
     setPaymentError(null)
   }
 
   const validatePaymentData = () => {
-    if (!paymentData.cardNumber.trim() || !paymentData.expiryDate.trim() || !paymentData.cvv.trim()) {
-      setPaymentError('Заполните все поля оплаты.')
+    if (!isPaymentFormComplete(paymentData)) {
+      setPaymentError('Заполните все поля оплаты корректно.')
       return false
     }
 
@@ -129,7 +111,7 @@ export const HotelDetailPage = () => {
         setBookingError('Комната уже забронирована на эти даты.')
       } else {
         console.error('Error creating booking:', error)
-        setBookingError('Не удалось создать бронирование.')
+        setBookingError(getErrorMessage(error, 'Не удалось создать бронирование.'))
       }
     }
   }
@@ -152,10 +134,11 @@ export const HotelDetailPage = () => {
       setPaymentModal(false)
       setPendingBookingId(null)
       setPaymentData({ cardNumber: '', expiryDate: '', cvv: '' })
+      notificationService.success('Бронирование успешно подтверждено')
       navigate('/profile/bookings')
     } catch (error) {
       console.error('Error confirming booking:', error)
-      setPaymentError('Не удалось подтвердить бронирование.')
+      setPaymentError(getErrorMessage(error, 'Не удалось подтвердить бронирование.'))
     } finally {
       setPaymentLoading(false)
     }
@@ -195,21 +178,7 @@ export const HotelDetailPage = () => {
       <h1 className={styles.hotelTitle}>{selectedRoom.hotel_name}</h1>
       <p className={styles.hotelLocation}>{selectedRoom.hotel_description}</p>
 
-      <div className={styles.roomScroller}>
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            className={`${styles.roomCard} ${selectedRoom?.id === room.id ? styles.selected : ''}`}
-            onClick={() => setSelectedRoom(room)}
-          >
-            <ImageWithFallback src={room.image_url} alt={room.name} className={styles.roomImage} />
-            <div className={styles.roomInfo}>
-              <h4>{room.name}</h4>
-              <p>{room.price_per_night} руб.</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <RoomList rooms={rooms} selectedRoom={selectedRoom} onSelectRoom={setSelectedRoom} />
 
       <div className={styles.mainContent}>
         <div className={styles.gallery}>
@@ -227,14 +196,28 @@ export const HotelDetailPage = () => {
           </p>
 
           <div className={styles.datePickers}>
-            <input type="date" name="check_in" min={today} value={bookingDates.check_in} onChange={handleDateChange} />
-            <input
-              type="date"
-              name="check_out"
-              min={bookingDates.check_in || today}
-              value={bookingDates.check_out}
-              onChange={handleDateChange}
-            />
+            <label className={styles.datePickerField}>
+              <span className={styles.datePickerLabel}>Дата заезда:</span>
+              <input
+                type="date"
+                name="check_in"
+                min={today}
+                value={bookingDates.check_in}
+                onChange={handleDateChange}
+                className={styles.datePickerInput}
+              />
+            </label>
+            <label className={styles.datePickerField}>
+              <span className={styles.datePickerLabel}>Дата выезда:</span>
+              <input
+                type="date"
+                name="check_out"
+                min={bookingDates.check_in || today}
+                value={bookingDates.check_out}
+                onChange={handleDateChange}
+                className={styles.datePickerInput}
+              />
+            </label>
           </div>
 
           <button className={styles.bookButton} onClick={handleBooking} disabled={isBookingDisabled}>
@@ -244,69 +227,17 @@ export const HotelDetailPage = () => {
         </div>
       </div>
 
-      <div className={styles.recommendations}>
-        <h3 className={styles.recommendationsTitle}>Рекомендации на основе ваших предпочтений</h3>
-        <div className={styles.recommendationsGrid}>
-          {recommendations.map((rec) => (
-            <div key={rec.id} className={styles.recCard}>
-              <ImageWithFallback src={rec.image_url} alt={rec.name} className={styles.recImage} />
-              <div className={styles.recContent}>
-                <h4 className={styles.recTitle}>{rec.name}</h4>
-                <p className={styles.recPrice}>Цена: {rec.price_per_night} руб.</p>
-              </div>
-              <button className={styles.recFooter} onClick={() => navigate(`/hotel/${rec.hotel_id}`)}>
-                Выбрать
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+      <RecommendedRooms recommendations={recommendations} />
 
       {paymentModal && (
-        <div className={styles.modalOverlay}>
-          <div className={`${styles.modal} ${styles.paymentModal}`}>
-            <button onClick={closePaymentModal} className={styles.closeModalButton} disabled={paymentLoading}>
-              &times;
-            </button>
-            <h3>Введите номер карты</h3>
-            <div className={styles.paymentForm}>
-              <div className={styles.paymentField}>
-                <label>Номер карты</label>
-                <input
-                  type="text"
-                  name="cardNumber"
-                  value={paymentData.cardNumber}
-                  onChange={handlePaymentFieldChange}
-                />
-              </div>
-              <div className={styles.paymentRow}>
-                <div className={styles.paymentField}>
-                  <label>Дата выдачи</label>
-                  <input
-                    type="text"
-                    name="expiryDate"
-                    placeholder="MM/YY"
-                    value={paymentData.expiryDate}
-                    onChange={handlePaymentFieldChange}
-                  />
-                </div>
-                <div className={styles.paymentField}>
-                  <label>CVV</label>
-                  <input
-                    type="text"
-                    name="cvv"
-                    value={paymentData.cvv}
-                    onChange={handlePaymentFieldChange}
-                  />
-                </div>
-              </div>
-              {paymentError && <p className={styles.disabledMessage}>{paymentError}</p>}
-              <button className={styles.paymentSubmitButton} onClick={handlePaymentConfirm} disabled={paymentLoading}>
-                {paymentLoading ? 'Подтверждение...' : 'Оплатить'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <PaymentModal
+          paymentData={paymentData}
+          paymentError={paymentError}
+          paymentLoading={paymentLoading}
+          onClose={closePaymentModal}
+          onFieldChange={handlePaymentFieldChange}
+          onConfirm={handlePaymentConfirm}
+        />
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { refresh } from './auth'
+import { notificationService } from '../services/notification/notificationService'
 import { STORAGE_ACCESS_TOKEN, STORAGE_AUTH_USER } from './storage'
 
 export const apiClient = axios.create({
@@ -65,6 +66,7 @@ apiClient.interceptors.response.use(
     } catch {
       refreshPromise = null
       clearAuthStorage()
+      notificationService.error('Сессия истекла. Войдите в систему снова.')
       window.dispatchEvent(new CustomEvent('auth:logout'))
       return Promise.reject(error)
     }

@@ -175,6 +175,8 @@
   max-width: 450px;
   width: 90%;
   position: relative;
+  color: #2F353B;
+  color-scheme: light;
 }
 
 .modal h3 {
@@ -250,6 +252,13 @@
   font-size: 16px;
   outline: none;
   background: transparent;
+  color: #2F353B;
+  caret-color: #2F353B;
+  -webkit-text-fill-color: #2F353B;
+}
+
+.paymentField input::placeholder {
+  color: #6F7A83;
 }
 
 .paymentRow {
@@ -298,6 +307,10 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
+  background: #FFFFFF;
+  color: #2F353B;
+  caret-color: #2F353B;
+  -webkit-text-fill-color: #2F353B;
 }
 
 .editError {

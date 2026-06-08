@@ -1,48 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { apiClient } from '../../api/client'
 import styles from './BookingHistory.module.css'
 import { AxiosError } from 'axios'
-
-interface UserInfo {
-  user_first_name: string
-  user_last_name: string
-  user_login: string
-}
-
-interface Booking {
-  id: number
-  room_id: number
-  hotel_id: number
-  check_in: string
-  check_out: string
-  total_price: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
-  // Merged data
-  hotel_name?: string
-  room_name?: string
-  hotel_image_url?: string
-}
-
-interface RoomDetails {
-  id: number
-  name: string
-  hotel_name: string
-  hotel_image_url: string
-}
-
-const statusLabels: Record<string, string> = {
-  pending: 'Ожидает оплаты',
-  confirmed: 'Подтверждено',
-  cancelled: 'Отменено',
-  completed: 'Завершено',
-}
-
-const statusColors: Record<string, string> = {
-  pending: '#FFA500',
-  confirmed: '#4CAF50',
-  cancelled: '#F44336',
-  completed: '#2196F3',
-}
+import { notificationService } from '../../services/notification/notificationService'
+import { getErrorMessage } from '../../utils/getErrorMessage'
+import { notifyApiError } from '../../utils/notifyApiError'
+import { BookingCard } from './BookingCard'
+import { sortBookingsByCheckIn } from './bookingUtils'
+import type { Booking, RoomDetails, UserInfo } from './types'
 
 export const BookingHistory = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
@@ -99,6 +64,7 @@ export const BookingHistory = () => {
         return;
       }
       console.error('Ошибка загрузки бронирований:', err)
+      notifyApiError(err, 'Не удалось загрузить бронирования')
       setBookings([])
     } finally {
       setLoading(false)
@@ -154,10 +120,11 @@ export const BookingHistory = () => {
     try {
       await apiClient.delete(`/bookings/${cancelModal.bookingId}`)
       handleCancelClose()
+      notificationService.success('Бронирование отменено')
       await fetchBookings(new AbortController().signal) // Re-fetch after action
     } catch (err) {
       console.error('Ошибка отмены:', err)
-      alert('Не удалось отменить бронирование.')
+      notifyApiError(err, 'Не удалось отменить бронирование')
     }
   }
 
@@ -169,10 +136,11 @@ export const BookingHistory = () => {
       await apiClient.post(`/bookings/${paymentModal.bookingId}/confirm`)
       setPaymentData({ cardNumber: '', expiryDate: '', cvv: '' })
       handlePaymentClose()
+      notificationService.success('Оплата прошла успешно')
       await fetchBookings(new AbortController().signal) // Re-fetch after action
     } catch (err) {
       console.error('Ошибка оплаты:', err)
-      alert('Не удалось провести оплату.')
+      setPaymentError(getErrorMessage(err, 'Не удалось провести оплату'))
     }
   }
 
@@ -187,24 +155,21 @@ export const BookingHistory = () => {
         },
       })
       handleEditClose()
+      notificationService.success('Бронирование изменено')
       await fetchBookings(new AbortController().signal) // Re-fetch after action
     } catch (err) {
       if (err instanceof AxiosError && err.response?.data?.detail === 'Room not available') {
         setEditError('Выбранные даты недоступны. Пожалуйста, выберите другие.')
       } else {
         console.error('Ошибка изменения:', err)
-        setEditError('Не удалось изменить бронирование. Попробуйте позже.')
+        setEditError(getErrorMessage(err, 'Не удалось изменить бронирование. Попробуйте позже.'))
       }
     }
   }
 
-  // --- Helper Functions ---
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '—'
-    return new Date(dateStr).toLocaleDateString('ru-RU')
-  }
-  
-  const today = new Date().toISOString().split('T')[0];
+  const sortedBookings = useMemo(() => sortBookingsByCheckIn(bookings), [bookings])
+
+  const today = new Date().toISOString().split('T')[0]
 
   if (loading) return <p>Загрузка...</p>
 
@@ -223,41 +188,18 @@ export const BookingHistory = () => {
       {/* Bookings Section */}
       <div className={styles.bookingsSection}>
         <h2 className={styles.sectionTitle}>Мои бронирования</h2>
-        {bookings.length === 0 ? (
+        {sortedBookings.length === 0 ? (
           <p className={styles.noBookings}>У вас пока нет бронирований.</p>
         ) : (
           <div className={styles.list}>
-            {bookings.map(booking => (
-              <div key={booking.id} className={styles.card}>
-                {booking.hotel_image_url && (
-                  <img src={booking.hotel_image_url} alt={booking.hotel_name} className={styles.cardImage} />
-                )}
-                <div className={styles.cardContent}>
-                  <div className={styles.header}>
-                    <h3>{booking.hotel_name}</h3>
-                    <span className={styles.status} style={{ backgroundColor: statusColors[booking.status] }}>
-                      {statusLabels[booking.status]}
-                    </span>
-                  </div>
-                  <div className={styles.info}>
-                    <p><strong>Комната:</strong> {booking.room_name}</p>
-                    <p><strong>Заезд:</strong> {formatDate(booking.check_in)}</p>
-                    <p><strong>Выезд:</strong> {formatDate(booking.check_out)}</p>
-                    <p><strong>Стоимость:</strong> {parseFloat(booking.total_price).toFixed(2)} руб.</p>
-                  </div>
-                  <div className={styles.actions}>
-                    {booking.status === 'pending' && (
-                      <button className={styles.payButton} onClick={() => handlePaymentRequest(booking.id)}>Оплатить</button>
-                    )}
-                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                      <>
-                        <button className={styles.editButton} onClick={() => handleEditRequest(booking)}>Изменить</button>
-                        <button className={styles.cancelButton} onClick={() => handleCancelRequest(booking.id)}>Отменить</button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+            {sortedBookings.map(booking => (
+              <BookingCard
+                key={booking.id}
+                booking={booking}
+                onPaymentRequest={handlePaymentRequest}
+                onEditRequest={handleEditRequest}
+                onCancelRequest={handleCancelRequest}
+              />
             ))}
           </div>
         )}

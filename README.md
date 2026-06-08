@@ -11,6 +11,7 @@
 | Сборка | Vite 8 |
 | Маршрутизация | React Router |
 | HTTP-клиент | Axios |
+| Выбор даты | [react-datepicker](https://reactdatepicker.com/) + [date-fns](https://date-fns.org/) (русская локаль) |
 | Стили | SCSS (UI-kit на BEM-классах) |
 | Контейнеризация | Docker |
 | Веб-сервер (production) | Nginx |
@@ -21,6 +22,8 @@
 - JWT access token + refresh token в httpOnly cookie
 - UI-kit: кнопки, поля ввода, карточки, навбар и др.
 - Проксирование API в dev (Vite) и в production (Nginx)
+- Фильтры на главной: поля «Дата начала» и «Дата окончания» открывают календарь по клику (`react-datepicker`), подсказка при наведении — через `title`
+- Автодополнение локации в фильтре: `GET /hotels/locations/suggest?q=...` (debounce 300 ms)
 
 ## Требования
 

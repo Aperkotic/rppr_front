@@ -1,8 +1,17 @@
 import { useEffect, useState, useCallback, useMemo, startTransition } from 'react';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './HotelsPage.module.css';
 import HotelCard from '../../components/HotelCard/HotelCard';
 import Pagination from '../../components/Pagination/Pagination';
 import { getHotels } from '../../api/hotels';
+import { notifyApiError } from '../../utils/notifyApiError';
+import { DateFilterInput } from './DateFilterInput';
+import { LocationFilterInput } from './LocationFilterInput';
+
+registerLocale('ru', ru);
 
 // Типы данных
 interface Hotel {
@@ -37,6 +46,20 @@ const initialFilters: Filters = {
 
 const PAGE_SIZE = 10;
 
+const FILTER_FIELDS: { key: keyof Filters; placeholder: string; inputType: 'text' | 'number' | 'date' | 'location' }[] = [
+  { key: 'location', placeholder: 'Локация', inputType: 'location' },
+  { key: 'price_from', placeholder: 'Цена от', inputType: 'number' },
+  { key: 'price_to', placeholder: 'Цена до', inputType: 'number' },
+  { key: 'date_from', placeholder: 'Дата начала', inputType: 'date' },
+  { key: 'date_to', placeholder: 'Дата окончания', inputType: 'date' },
+];
+
+const parseFilterDate = (value: string): Date | null => {
+  if (!value) return null;
+  const parsed = new Date(`${value}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const HotelsPage = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,8 +69,11 @@ const HotelsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Получаем сегодняшнюю дату в формате YYYY-MM-DD для атрибута min
-  const today = new Date().toISOString().split('T')[0];
+  const todayDate = useMemo(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }, []);
 
   const fetchHotels = useCallback(async (page: number, currentFilters: Filters) => {
     setLoading(true);
@@ -67,8 +93,8 @@ const HotelsPage = () => {
       setHotels(data.hotels);
       setTotalPages(Math.ceil(data.total / PAGE_SIZE));
     } catch (err: unknown) {
-      // Если бэкенд недоступен — просто показываем пустой список
-      console.log('HotelsPage: бэкенд недоступен, показываем пустой список', err);
+      console.error('HotelsPage: ошибка загрузки отелей', err);
+      notifyApiError(err, 'Не удалось загрузить отели');
       setHotels([]);
       setTotalPages(0);
     } finally {
@@ -85,6 +111,16 @@ const HotelsPage = () => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilterError(null);
+
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (name: 'date_from' | 'date_to', date: Date | null) => {
+    setFilterError(null);
+    const value = date ? format(date, 'yyyy-MM-dd') : '';
 
     setFilters(prevFilters => {
       if (name === 'date_to' && value && prevFilters.date_from && value < prevFilters.date_from) {
@@ -106,6 +142,14 @@ const HotelsPage = () => {
         [name]: value,
       };
     });
+  };
+
+  const handleLocationChange = (value: string) => {
+    setFilterError(null);
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      location: value,
+    }));
   };
 
   const handleClearInput = (fieldName: keyof Filters) => {
@@ -147,40 +191,58 @@ const HotelsPage = () => {
   return (
     <div className={styles.hotelsPage}>
       <div className={styles.searchBar}>
-        {Object.keys(filters).map((key) => {
-          const filterKey = key as keyof Filters;
-          const placeholder = {
-            location: 'Локация',
-            price_from: 'Цена от',
-            price_to: 'Цена до',
-            date_from: 'Дата начала',
-            date_to: 'Дата окончания',
-          }[filterKey];
-          const type = key.includes('date') ? 'date' : key.includes('price') ? 'number' : 'text';
-          const minValue = filterKey === 'date_to' ? filters.date_from || today : type === 'date' ? today : undefined;
-
-          return (
-            <div key={filterKey} className={styles.inputWrapper}>
+        {FILTER_FIELDS.map(({ key: filterKey, placeholder, inputType }) => (
+          <div key={filterKey} className={styles.inputWrapper}>
+            {inputType === 'location' ? (
+              <LocationFilterInput
+                value={filters.location}
+                placeholder={placeholder}
+                onChange={handleLocationChange}
+              />
+            ) : inputType === 'date' ? (
+              <DatePicker
+                selected={parseFilterDate(filters[filterKey])}
+                onChange={(date: Date | null) => handleDateChange(filterKey as 'date_from' | 'date_to', date)}
+                minDate={
+                  filterKey === 'date_to'
+                    ? parseFilterDate(filters.date_from) ?? todayDate
+                    : todayDate
+                }
+                dateFormat="dd.MM.yyyy"
+                locale="ru"
+                placeholderText={placeholder}
+                customInput={
+                  <DateFilterInput
+                    title={placeholder}
+                    placeholder={placeholder}
+                    className={styles.searchInput}
+                  />
+                }
+                wrapperClassName={styles.datePickerWrapper}
+                calendarClassName="hotelsDatePickerCalendar"
+                popperClassName="hotelsDatePickerPopper"
+              />
+            ) : (
               <input
-                type={type}
+                type={inputType}
                 name={filterKey}
                 placeholder={placeholder}
-                className={styles.searchInput}
+                className={`${styles.searchInput} ${inputType === 'number' ? styles.searchInputNumber : ''}`}
                 value={filters[filterKey]}
                 onChange={handleFilterChange}
-                min={minValue}
               />
-              {filters[filterKey] && (
-                <button
-                  className={styles.clearInputButton}
-                  onClick={() => handleClearInput(filterKey)}
-                >
-                  &times;
-                </button>
-              )}
-            </div>
-          );
-        })}
+            )}
+            {filters[filterKey] && (
+              <button
+                type="button"
+                className={styles.clearInputButton}
+                onClick={() => handleClearInput(filterKey)}
+              >
+                &times;
+              </button>
+            )}
+          </div>
+        ))}
         <button className={styles.searchButton} onClick={handleSearch} disabled={loading}>
           {loading ? 'Поиск...' : 'Найти'}
         </button>

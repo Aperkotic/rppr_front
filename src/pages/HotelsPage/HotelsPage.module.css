@@ -30,11 +30,102 @@
   padding: 0 30px 0 15px; 
   font-family: 'Inter', sans-serif;
   font-size: 16px;
-  color: #6F7A83;
+  color: #2F353B;
+  color-scheme: light;
 }
 
 .searchInput::placeholder {
   color: #6F7A83;
+}
+
+.searchInputNumber {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.searchInputNumber::-webkit-outer-spin-button,
+.searchInputNumber::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.datePickerWrapper {
+  width: 100%;
+}
+
+.locationAutocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.suggestionsList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #FFFFFF;
+  border: 1px solid #9ACEEB;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestionItem {
+  display: block;
+  width: 100%;
+  padding: 8px 15px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #2F353B;
+  cursor: pointer;
+}
+
+.suggestionItem:hover {
+  background-color: #F7FBFE;
+}
+
+.datePickerWrapper :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+:global(.hotelsDatePickerCalendar.react-datepicker) {
+  border: 1px solid #9ACEEB;
+  border-radius: 5px;
+  font-family: 'Inter', sans-serif;
+  color: #2F353B;
+}
+
+:global(.hotelsDatePickerCalendar .react-datepicker__header) {
+  background-color: #F7FBFE;
+  border-bottom: 1px solid #9ACEEB;
+}
+
+:global(.hotelsDatePickerCalendar .react-datepicker__day--selected),
+:global(.hotelsDatePickerCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #9ACEEB;
+  color: #000000;
+}
+
+:global(.hotelsDatePickerCalendar .react-datepicker__day:hover) {
+  background-color: #6FAFD6;
+  color: #000000;
+}
+
+:global(.hotelsDatePickerCalendar .react-datepicker__day--disabled) {
+  color: #cccccc;
+}
+
+:global(.hotelsDatePickerPopper) {
+  z-index: 10;
 }
 
 .clearInputButton {

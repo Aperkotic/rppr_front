@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiClient } from '../../api/client'
+import { formatRuDate } from '../../utils/formatDate'
 import styles from './AdminPage.module.css'
 
 type BookingStatus = 'pending' | 'confirmed' | 'cancelled'
@@ -192,7 +193,9 @@ export const AdminPage = () => {
                       <div>{booking.room.name}</div>
                       <div className={styles.muted}>Отель #{booking.room.hotel_id}</div>
                     </td>
-                    <td>{booking.check_in} - {booking.check_out}</td>
+                    <td>
+                      {formatRuDate(booking.check_in)} – {formatRuDate(booking.check_out)}
+                    </td>
                     <td>{formatMoney(booking.total_price)}</td>
                     <td>
                       <select

@@ -27,12 +27,80 @@
   margin-bottom: 3rem;
 }
 
-.roomScroller {
+.horizontalScrollerWrapper {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.horizontalScroller {
   display: flex;
   overflow-x: auto;
   gap: 1rem;
   padding-bottom: 1rem;
-  margin-bottom: 2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.horizontalScrollerWide {
+  gap: 2rem;
+}
+
+.horizontalScroller::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontalScrollerFadeLeft,
+.horizontalScrollerFadeRight {
+  position: absolute;
+  top: 0;
+  bottom: 1rem;
+  width: 56px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.horizontalScrollerFadeLeft {
+  left: 0;
+  background: linear-gradient(to right, #F7FBFE 20%, rgba(247, 251, 254, 0));
+}
+
+.horizontalScrollerFadeRight {
+  right: 0;
+  background: linear-gradient(to left, #F7FBFE 20%, rgba(247, 251, 254, 0));
+}
+
+.scrollArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #9ACEEB;
+  background: rgba(255, 255, 255, 0.95);
+  color: #4D89AE;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 2px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.scrollArrow:hover {
+  background: #9ACEEB;
+  color: #2F353B;
+}
+
+.scrollArrowLeft {
+  left: 8px;
+}
+
+.scrollArrowRight {
+  right: 8px;
 }
 
 .roomCard {
@@ -41,6 +109,11 @@
   cursor: pointer;
   flex-shrink: 0;
   width: 200px;
+  transition: border-color 0.3s;
+}
+
+.roomCard:hover {
+  border-color: #4D89AE;
 }
 
 .roomCard.selected {
@@ -100,7 +173,48 @@
 }
 
 .datePickers {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.datePickerField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.datePickerLabel {
+  font-size: 18px;
+  color: #2F353B;
+}
+
+.datePickerInput {
+  width: 245px;
+  padding: 0.85rem 2.5rem 0.85rem 1rem;
+  font-size: 18px;
+  font-family: inherit;
+  color: #2F353B;
+  background: #FFFFFF;
+  border: 1px solid #4D89AE;
+  border-radius: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+  color-scheme: light;
+}
+
+.datePickerInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.datePickerInput:focus {
+  outline: none;
+  border-color: #4D89AE;
+  box-shadow: 0 0 0 2px rgba(77, 137, 174, 0.2);
 }
 
 .bookButton {
@@ -134,12 +248,6 @@
   margin-bottom: 2rem;
 }
 
-.recommendationsGrid {
-  display: flex;
-  gap: 2rem;
-  overflow-x: auto;
-}
-
 .recCard {
   background: #FFFFFF;
   border: 1px solid #9ACEEB;
@@ -148,12 +256,16 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .recImage {
   width: 100%;
   height: 150px;
-  object-fit: cover;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .recContent {
@@ -207,6 +319,8 @@
   max-width: 450px;
   width: 90%;
   position: relative;
+  color: #2F353B;
+  color-scheme: light;
 }
 
 .paymentModal {
@@ -240,6 +354,13 @@
   font-size: 16px;
   outline: none;
   background: transparent;
+  color: #2F353B;
+  caret-color: #2F353B;
+  -webkit-text-fill-color: #2F353B;
+}
+
+.paymentField input::placeholder {
+  color: #6F7A83;
 }
 
 .paymentRow {

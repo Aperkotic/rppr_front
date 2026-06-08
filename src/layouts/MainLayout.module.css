@@ -1,24 +1,24 @@
 .mainLayout {
-  background-color: #F7FBFE;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  height: 80px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  width: 100%;
-  box-sizing: border-box;
+  align-items: center;
+  padding: 15px 30px;
+  background: #FFFFFF;
+  border-bottom: 2px solid #9ACEEB;
 }
 
 .brand {
   font-family: 'Inter', sans-serif;
   font-size: 24px;
-  font-weight: bold;
   color: #4D89AE;
   text-decoration: none;
+  font-weight: 600;
 }
 
 .nav {
@@ -27,31 +27,88 @@
   gap: 20px;
 }
 
-.navLink, .userName {
+.navLink {
   font-family: 'Inter', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 22px;
-  color: #4D89AE;
+  font-size: 14px;
+  color: #2F353B;
   text-decoration: none;
-  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
 .navLink:hover {
-  text-decoration: underline;
+  background: #E8F4FA;
 }
 
-.content {
-  /* Убираем ограничение ширины, так как страница отелей должна быть широкой */
-  max-width: 1920px;
-  margin: 0 auto;
-  padding: 0;
+.userMenu {
+  position: relative;
+}
+
+.userNameButton {
+  background: none;
+  border: 1px solid #9ACEEB;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #2F353B;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s;
+}
+
+.userNameButton:hover {
+  background: #E8F4FA;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: #FFFFFF;
+  border: 1px solid #9ACEEB;
+  border-radius: 4px;
+  min-width: 220px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid #e5e4e7;
+  background: none;
+  color: #2F353B;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+}
+
+.dropdownItem:hover {
+  background: #E8F4FA;
+}
+
+.dropdownDivider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #9ACEEB;
 }
 
 .separator {
-  border: 1px solid #9ACEEB;
-  /* Небольшой наклон, как в макете */
-  transform: rotate(-0.06deg);
   margin: 0;
+  border: none;
+  border-top: 1px solid #9ACEEB;
+}
+
+.content {
+  flex: 1;
+  background: #F7FBFE;
 }

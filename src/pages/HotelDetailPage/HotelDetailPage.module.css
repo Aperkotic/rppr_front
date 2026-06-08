@@ -1,0 +1,275 @@
+.page {
+  background: #F7FBFE;
+  padding: 2rem 5%;
+  font-family: 'Inter', sans-serif;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #000000;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.hotelTitle {
+  font-size: 36px;
+  color: #2F353B;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.hotelLocation {
+  font-size: 18px;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.roomScroller {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.roomCard {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 200px;
+}
+
+.roomCard.selected {
+  border-color: #4D89AE;
+}
+
+.roomImage {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px 6px 0 0;
+}
+
+.roomInfo {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.mainContent {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.gallery {
+  flex: 1;
+}
+
+.mainImage {
+  width: 100%;
+  height: auto;
+  border: 1px solid #AFC9D9;
+  background: #FFFFFF;
+}
+
+.roomDetails {
+  flex: 1;
+  padding: 2rem;
+}
+
+.roomTitle {
+  font-size: 36px;
+  color: #2F353B;
+  margin-bottom: 1rem;
+}
+
+.roomDescription {
+  font-size: 24px;
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+.capacity, .price {
+  font-size: 18px;
+  color: #000000;
+  margin-bottom: 1rem;
+}
+
+.datePickers {
+  margin-bottom: 1rem;
+}
+
+.bookButton {
+  background: #9ACEEB;
+  border: 1px solid #9ACEEB;
+  border-radius: 5px;
+  padding: 0.8rem 2rem;
+  font-size: 24px;
+  color: #2F353B;
+  cursor: pointer;
+}
+
+.bookButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.disabledMessage {
+  color: #F44336;
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+.recommendations {
+  margin-top: 4rem;
+}
+
+.recommendationsTitle {
+  font-size: 24px;
+  color: #2F353B;
+  margin-bottom: 2rem;
+}
+
+.recommendationsGrid {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+}
+
+.recCard {
+  background: #FFFFFF;
+  border: 1px solid #9ACEEB;
+  border-radius: 5px;
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.recImage {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.recContent {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.recTitle {
+  font-size: 18px;
+  color: #4D89AE;
+  margin: 0 0 0.5rem 0;
+}
+
+.recPrice {
+  font-size: 12px;
+  color: #000000;
+  margin: 0;
+}
+
+.recFooter {
+  border: none;
+  width: 100%;
+  background: #6FAFD6;
+  color: #2F353B;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 12px;
+  border-radius: 0 0 5px 5px;
+  cursor: pointer;
+  margin-top: auto;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 450px;
+  width: 90%;
+  position: relative;
+}
+
+.paymentModal {
+  width: 100%;
+  max-width: 500px;
+}
+
+.paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.paymentField {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #9ACEEB;
+  padding-bottom: 0.5rem;
+}
+
+.paymentField label {
+  font-size: 12px;
+  color: #6F7A83;
+  margin-bottom: 0.5rem;
+}
+
+.paymentField input {
+  border: none;
+  font-size: 16px;
+  outline: none;
+  background: transparent;
+}
+
+.paymentRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.paymentRow .paymentField {
+  flex: 1;
+}
+
+.paymentSubmitButton {
+  width: 100%;
+  padding: 1rem;
+  background: #9ACEEB;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #2F353B;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.closeModalButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6F7A83;
+}

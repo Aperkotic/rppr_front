@@ -58,11 +58,8 @@ html, body, #root {
 }
 
 body {
-  background: var(--bg); /* Применяем фон к body */
+  background: var(--bg);
 }
-
-/* Убираем стили, которые теперь находятся в MainLayout.module.css */
-/* #root { ... } */
 
 h1,
 h2 {
@@ -80,6 +77,7 @@ h1 {
     margin: 20px 0;
   }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
@@ -89,6 +87,7 @@ h2 {
     font-size: 20px;
   }
 }
+
 p {
   margin: 0;
 }

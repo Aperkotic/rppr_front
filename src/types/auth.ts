@@ -23,7 +23,6 @@ export type UserCreate = Omit<User, 'id'> & {
   password?: string;
 };
 
-// Теперь AuthUser будет содержать все поля User, кроме id
 export type AuthUser = Omit<User, 'id'>;
 
 export function isFullUser(user: AuthUser | User): user is User {

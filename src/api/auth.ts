@@ -1,6 +1,13 @@
 import { UserCreate } from '../types/auth';
 
-// Эта функция соответствует ожиданиям AuthContext
+interface LoginResponse {
+  access_token: string;
+  token_type?: string;
+  first_name?: string;
+  last_name?: string;
+  is_manager?: boolean;  // ← ВАЖНО!
+}
+
 export const register = async (data: UserCreate) => {
   const response = await fetch(`/auth/register`, {
     method: 'POST',
@@ -15,12 +22,11 @@ export const register = async (data: UserCreate) => {
     const error = await response.json();
     throw new Error(error.detail || 'Ошибка регистрации');
   }
-
   return response.json();
 };
 
-// Эта функция соответствует ожиданиям AuthContext
-export const login = async (loginName: string, password_str: string) => {
+// ✅ Возвращаем LoginResponse с is_manager
+export const login = async (loginName: string, password_str: string): Promise<LoginResponse> => {
   const body = new URLSearchParams();
   body.append('grant_type', '');
   body.append('username', loginName);
@@ -42,13 +48,10 @@ export const login = async (loginName: string, password_str: string) => {
     const error = await response.json();
     throw new Error(error.detail || 'Ошибка входа');
   }
-
   return response.json();
 };
 
-// Заглушка для функции refresh, чтобы исправить ошибку в client.ts
 export const refresh = async () => {
   console.warn('Функция refresh не реализована');
-  // В будущем здесь будет логика обновления токена
   return Promise.resolve({ access_token: '' });
 };

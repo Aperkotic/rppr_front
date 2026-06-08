@@ -1,4 +1,3 @@
-
 export const getHotels = async (params: URLSearchParams) => {
   const response = await fetch(`/hotels/?${params.toString()}`, {
     method: 'GET',

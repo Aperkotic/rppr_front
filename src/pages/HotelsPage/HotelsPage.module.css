@@ -27,7 +27,7 @@
   background: #F7FBFE;
   border: 1px solid #9ACEEB;
   border-radius: 5px;
-  padding: 0 30px 0 15px; /* Оставляем место для крестика */
+  padding: 0 30px 0 15px; 
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   color: #6F7A83;
@@ -95,7 +95,7 @@
   border-color: #e0e0e0;
   color: #cccccc;
   cursor: not-allowed;
-  background-color: transparent; /* Убедимся, что фон не меняется */
+  background-color: transparent; 
 }
 
 .filterError {

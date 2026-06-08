@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { AuthProvider } from './contexts/AuthContext'
 import { NotificationProvider } from './components/Notification/NotificationProvider'
 import './index.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import './components/ui-kit/scss/main.scss'
 import App from './App.tsx'
 

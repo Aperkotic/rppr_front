@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { apiClient } from '../../api/client'
+import { DatePickerField } from '../../components/DatePickerField/DatePickerField'
 import styles from './BookingHistory.module.css'
 import { AxiosError } from 'axios'
 import { notificationService } from '../../services/notification/notificationService'
@@ -7,6 +8,7 @@ import { getErrorMessage } from '../../utils/getErrorMessage'
 import { notifyApiError } from '../../utils/notifyApiError'
 import { BookingCard } from './BookingCard'
 import { sortBookingsByCheckIn } from './bookingUtils'
+import { getTodayStart, parseIsoDate } from '../../utils/datePicker'
 import type { Booking, RoomDetails, UserInfo } from './types'
 
 export const BookingHistory = () => {
@@ -168,8 +170,18 @@ export const BookingHistory = () => {
   }
 
   const sortedBookings = useMemo(() => sortBookingsByCheckIn(bookings), [bookings])
+  const todayDate = useMemo(() => getTodayStart(), [])
 
-  const today = new Date().toISOString().split('T')[0]
+  const handleEditDateChange = (field: 'check_in' | 'check_out', value: string) => {
+    setEditDates((prev) => {
+      if (field === 'check_in' && value && prev.check_out && prev.check_out < value) {
+        return { check_in: value, check_out: '' }
+      }
+
+      return { ...prev, [field]: value }
+    })
+    setEditError(null)
+  }
 
   if (loading) return <p>Загрузка...</p>
 
@@ -268,21 +280,29 @@ export const BookingHistory = () => {
             <h3>Изменить бронирование</h3>
             <div className={styles.editForm}>
               <div className={styles.editField}>
-                <label>Дата заезда</label>
-                <input 
-                  type="date" 
-                  value={editDates.check_in} 
-                  min={today}
-                  onChange={e => setEditDates({...editDates, check_in: e.target.value})} 
+                <label htmlFor="edit-check-in">Дата заезда</label>
+                <DatePickerField
+                  id="edit-check-in"
+                  value={editDates.check_in}
+                  onChange={(value) => handleEditDateChange('check_in', value)}
+                  minDate={todayDate}
+                  placeholder="ДД.ММ.ГГГГ"
+                  title="Дата заезда"
+                  inputClassName={styles.editDateInput}
+                  popperClassName="datePickerPopperModal"
                 />
               </div>
               <div className={styles.editField}>
-                <label>Дата выезда</label>
-                <input 
-                  type="date" 
-                  value={editDates.check_out} 
-                  min={editDates.check_in || today}
-                  onChange={e => setEditDates({...editDates, check_out: e.target.value})} 
+                <label htmlFor="edit-check-out">Дата выезда</label>
+                <DatePickerField
+                  id="edit-check-out"
+                  value={editDates.check_out}
+                  onChange={(value) => handleEditDateChange('check_out', value)}
+                  minDate={parseIsoDate(editDates.check_in) ?? todayDate}
+                  placeholder="ДД.ММ.ГГГГ"
+                  title="Дата выезда"
+                  inputClassName={styles.editDateInput}
+                  popperClassName="datePickerPopperModal"
                 />
               </div>
             </div>

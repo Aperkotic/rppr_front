@@ -1,0 +1,44 @@
+.wrapper {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.wrapper :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+:global(.datePickerCalendar.react-datepicker) {
+  border: 1px solid #9ACEEB;
+  border-radius: 5px;
+  font-family: 'Inter', sans-serif;
+  color: #2F353B;
+}
+
+:global(.datePickerCalendar .react-datepicker__header) {
+  background-color: #F7FBFE;
+  border-bottom: 1px solid #9ACEEB;
+}
+
+:global(.datePickerCalendar .react-datepicker__day--selected),
+:global(.datePickerCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #9ACEEB;
+  color: #000000;
+}
+
+:global(.datePickerCalendar .react-datepicker__day:hover) {
+  background-color: #6FAFD6;
+  color: #000000;
+}
+
+:global(.datePickerCalendar .react-datepicker__day--disabled) {
+  color: #cccccc;
+}
+
+:global(.datePickerPopper) {
+  z-index: 20;
+}
+
+:global(.datePickerPopperModal) {
+  z-index: 1100;
+}

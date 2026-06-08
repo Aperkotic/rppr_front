@@ -1,6 +1,6 @@
 import { UserCreate } from '../types/auth';
 
-interface LoginResponse {
+export interface LoginResponse {
   access_token: string;
   token_type?: string;
   first_name?: string;
@@ -11,6 +11,7 @@ interface LoginResponse {
 export const register = async (data: UserCreate) => {
   const response = await fetch(`/auth/register`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json',
@@ -37,6 +38,7 @@ export const login = async (loginName: string, password_str: string): Promise<Lo
 
   const response = await fetch(`/auth/login`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'accept': 'application/json',
@@ -51,7 +53,24 @@ export const login = async (loginName: string, password_str: string): Promise<Lo
   return response.json();
 };
 
-export const refresh = async () => {
-  console.warn('Функция refresh не реализована');
-  return Promise.resolve({ access_token: '' });
+export const refresh = async (): Promise<LoginResponse> => {
+  const response = await fetch('/auth/refresh', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Не удалось обновить сессию');
+  }
+
+  const data = (await response.json()) as LoginResponse;
+  if (!data.access_token) {
+    throw new Error('Сервер вернул пустой токен');
+  }
+
+  return data;
 };

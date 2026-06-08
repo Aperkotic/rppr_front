@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../api/client'
 import styles from './HotelDetailPage.module.css'
@@ -10,8 +10,10 @@ import { notifyApiError } from '../../utils/notifyApiError'
 import { ImageWithFallback } from './ImageWithFallback'
 import { RoomList } from './RoomList'
 import { RecommendedRooms } from './RecommendedRooms'
+import { DatePickerField } from '../../components/DatePickerField/DatePickerField'
 import { PaymentModal } from './PaymentModal'
 import { isPaymentFormComplete } from './paymentMasks'
+import { getTodayStart, parseIsoDate } from '../../utils/datePicker'
 import type { Room, RecommendedRoom } from './types'
 
 interface CreatedBooking {
@@ -35,7 +37,7 @@ export const HotelDetailPage = () => {
   const [bookingError, setBookingError] = useState<string | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
-  const today = new Date().toISOString().split('T')[0]
+  const todayDate = useMemo(() => getTodayStart(), [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,8 +65,14 @@ export const HotelDetailPage = () => {
     fetchData()
   }, [hotelId])
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBookingDates({ ...bookingDates, [event.target.name]: event.target.value })
+  const handleDateChange = (field: 'check_in' | 'check_out', value: string) => {
+    setBookingDates((prev) => {
+      if (field === 'check_in' && value && prev.check_out && prev.check_out < value) {
+        return { check_in: value, check_out: '' }
+      }
+
+      return { ...prev, [field]: value }
+    })
     setBookingError(null)
   }
 
@@ -196,28 +204,36 @@ export const HotelDetailPage = () => {
           </p>
 
           <div className={styles.datePickers}>
-            <label className={styles.datePickerField}>
-              <span className={styles.datePickerLabel}>Дата заезда:</span>
-              <input
-                type="date"
-                name="check_in"
-                min={today}
+            <div className={styles.datePickerField}>
+              <label className={styles.datePickerLabel} htmlFor="booking-check-in">
+                Дата заезда:
+              </label>
+              <DatePickerField
+                id="booking-check-in"
                 value={bookingDates.check_in}
-                onChange={handleDateChange}
-                className={styles.datePickerInput}
+                onChange={(value) => handleDateChange('check_in', value)}
+                minDate={todayDate}
+                placeholder="ДД.ММ.ГГГГ"
+                title="Дата заезда"
+                inputClassName={styles.datePickerInput}
+                wrapperClassName={styles.datePickerWrapper}
               />
-            </label>
-            <label className={styles.datePickerField}>
-              <span className={styles.datePickerLabel}>Дата выезда:</span>
-              <input
-                type="date"
-                name="check_out"
-                min={bookingDates.check_in || today}
+            </div>
+            <div className={styles.datePickerField}>
+              <label className={styles.datePickerLabel} htmlFor="booking-check-out">
+                Дата выезда:
+              </label>
+              <DatePickerField
+                id="booking-check-out"
                 value={bookingDates.check_out}
-                onChange={handleDateChange}
-                className={styles.datePickerInput}
+                onChange={(value) => handleDateChange('check_out', value)}
+                minDate={parseIsoDate(bookingDates.check_in) ?? todayDate}
+                placeholder="ДД.ММ.ГГГГ"
+                title="Дата выезда"
+                inputClassName={styles.datePickerInput}
+                wrapperClassName={styles.datePickerWrapper}
               />
-            </label>
+            </div>
           </div>
 
           <button className={styles.bookButton} onClick={handleBooking} disabled={isBookingDisabled}>

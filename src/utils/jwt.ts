@@ -29,6 +29,13 @@ export function getUserIdFromToken(token: string): number | null {
   }
 }
 
+/** Unix timestamp (seconds) when the token expires, or null if unreadable. */
+export function getTokenExpiresAt(token: string): number | null {
+  const payload = getJwtPayload(token)
+  const exp = payload?.exp
+  return typeof exp === 'number' && Number.isFinite(exp) ? exp : null
+}
+
 export function getIsManagerFromToken(token: string): boolean {
   const payload = getJwtPayload(token)
   const value = payload?.is_manager

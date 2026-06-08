@@ -1,17 +1,12 @@
 import { useEffect, useState, useCallback, useMemo, startTransition } from 'react';
-import DatePicker, { registerLocale } from 'react-datepicker';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
-import 'react-datepicker/dist/react-datepicker.css';
 import styles from './HotelsPage.module.css';
 import HotelCard from '../../components/HotelCard/HotelCard';
 import Pagination from '../../components/Pagination/Pagination';
+import { DatePickerField } from '../../components/DatePickerField/DatePickerField';
 import { getHotels } from '../../api/hotels';
 import { notifyApiError } from '../../utils/notifyApiError';
-import { DateFilterInput } from './DateFilterInput';
+import { getTodayStart, parseIsoDate } from '../../utils/datePicker';
 import { LocationFilterInput } from './LocationFilterInput';
-
-registerLocale('ru', ru);
 
 // Типы данных
 interface Hotel {
@@ -54,12 +49,6 @@ const FILTER_FIELDS: { key: keyof Filters; placeholder: string; inputType: 'text
   { key: 'date_to', placeholder: 'Дата окончания', inputType: 'date' },
 ];
 
-const parseFilterDate = (value: string): Date | null => {
-  if (!value) return null;
-  const parsed = new Date(`${value}T00:00:00`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-};
-
 const HotelsPage = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,11 +58,7 @@ const HotelsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  const todayDate = useMemo(() => {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    return date;
-  }, []);
+  const todayDate = useMemo(() => getTodayStart(), []);
 
   const fetchHotels = useCallback(async (page: number, currentFilters: Filters) => {
     setLoading(true);
@@ -118,9 +103,8 @@ const HotelsPage = () => {
     }));
   };
 
-  const handleDateChange = (name: 'date_from' | 'date_to', date: Date | null) => {
+  const handleDateChange = (name: 'date_from' | 'date_to', value: string) => {
     setFilterError(null);
-    const value = date ? format(date, 'yyyy-MM-dd') : '';
 
     setFilters(prevFilters => {
       if (name === 'date_to' && value && prevFilters.date_from && value < prevFilters.date_from) {
@@ -200,27 +184,18 @@ const HotelsPage = () => {
                 onChange={handleLocationChange}
               />
             ) : inputType === 'date' ? (
-              <DatePicker
-                selected={parseFilterDate(filters[filterKey])}
-                onChange={(date: Date | null) => handleDateChange(filterKey as 'date_from' | 'date_to', date)}
+              <DatePickerField
+                value={filters[filterKey]}
+                onChange={(value) => handleDateChange(filterKey as 'date_from' | 'date_to', value)}
                 minDate={
                   filterKey === 'date_to'
-                    ? parseFilterDate(filters.date_from) ?? todayDate
+                    ? parseIsoDate(filters.date_from) ?? todayDate
                     : todayDate
                 }
-                dateFormat="dd.MM.yyyy"
-                locale="ru"
-                placeholderText={placeholder}
-                customInput={
-                  <DateFilterInput
-                    title={placeholder}
-                    placeholder={placeholder}
-                    className={styles.searchInput}
-                  />
-                }
+                placeholder={placeholder}
+                title={placeholder}
+                inputClassName={styles.searchInput}
                 wrapperClassName={styles.datePickerWrapper}
-                calendarClassName="hotelsDatePickerCalendar"
-                popperClassName="hotelsDatePickerPopper"
               />
             ) : (
               <input

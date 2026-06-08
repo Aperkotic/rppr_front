@@ -1,7 +1,7 @@
-import { forwardRef } from 'react';
+import { forwardRef } from 'react'
 
 interface DateFilterInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  title: string;
+  title: string
 }
 
 export const DateFilterInput = forwardRef<HTMLInputElement, DateFilterInputProps>(
@@ -16,6 +16,6 @@ export const DateFilterInput = forwardRef<HTMLInputElement, DateFilterInputProps
       className={className}
     />
   ),
-);
+)
 
-DateFilterInput.displayName = 'DateFilterInput';
+DateFilterInput.displayName = 'DateFilterInput'

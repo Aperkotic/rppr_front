@@ -92,42 +92,6 @@
   background-color: #F7FBFE;
 }
 
-.datePickerWrapper :global(.react-datepicker-wrapper) {
-  display: block;
-  width: 100%;
-}
-
-:global(.hotelsDatePickerCalendar.react-datepicker) {
-  border: 1px solid #9ACEEB;
-  border-radius: 5px;
-  font-family: 'Inter', sans-serif;
-  color: #2F353B;
-}
-
-:global(.hotelsDatePickerCalendar .react-datepicker__header) {
-  background-color: #F7FBFE;
-  border-bottom: 1px solid #9ACEEB;
-}
-
-:global(.hotelsDatePickerCalendar .react-datepicker__day--selected),
-:global(.hotelsDatePickerCalendar .react-datepicker__day--keyboard-selected) {
-  background-color: #9ACEEB;
-  color: #000000;
-}
-
-:global(.hotelsDatePickerCalendar .react-datepicker__day:hover) {
-  background-color: #6FAFD6;
-  color: #000000;
-}
-
-:global(.hotelsDatePickerCalendar .react-datepicker__day--disabled) {
-  color: #cccccc;
-}
-
-:global(.hotelsDatePickerPopper) {
-  z-index: 10;
-}
-
 .clearInputButton {
   position: absolute;
   right: 10px;

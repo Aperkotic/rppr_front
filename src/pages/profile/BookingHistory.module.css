@@ -102,6 +102,7 @@
   border-radius: 12px;
   font-size: 0.8rem;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .info {
@@ -302,7 +303,9 @@
   color: #6F7A83;
 }
 
-.editField input {
+.editDateInput {
+  width: 100%;
+  box-sizing: border-box;
   padding: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -311,6 +314,8 @@
   color: #2F353B;
   caret-color: #2F353B;
   -webkit-text-fill-color: #2F353B;
+  cursor: pointer;
+  color-scheme: light;
 }
 
 .editError {

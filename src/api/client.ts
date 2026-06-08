@@ -54,17 +54,19 @@ apiClient.interceptors.response.use(
 
     try {
       if (!refreshPromise) {
-        refreshPromise = refresh().then((data) => {
-          setAccessToken(data.access_token)
-          return data.access_token
-        })
+        refreshPromise = refresh()
+          .then((data) => {
+            setAccessToken(data.access_token)
+            return data.access_token
+          })
+          .finally(() => {
+            refreshPromise = null
+          })
       }
       const newToken = await refreshPromise
-      refreshPromise = null
       original.headers.Authorization = `Bearer ${newToken}`
       return apiClient(original)
     } catch {
-      refreshPromise = null
       clearAuthStorage()
       notificationService.error('Сессия истекла. Войдите в систему снова.')
       window.dispatchEvent(new CustomEvent('auth:logout'))
